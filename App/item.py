@@ -79,6 +79,17 @@ class Item(QWidget):
         
         new = QLabel("", self)
         new.setGeometry(10, 30+80*n, 250, 70)
+        
+        
+        txt = QLineEdit(new)
+        txt.move(22, 15)
+        txt.setFrame(False);
+        
+        txt.setProperty("cssClass", "txt")
+        txt.setAttribute(Qt.WA_MacShowFocusRect, 0)
+        
+        txt.setAlignment(Qt.AlignCenter)
+        
         new.show()
         self.children.append(new)
 
@@ -103,19 +114,30 @@ class Item(QWidget):
             }
 
             *[cssClass="title"] {     
-                background-color: rgba(0,0,0,0);       
-                padding: 3px;
-                color: #382606;
-                border: none;
                 font-size: 35px;
                 min-height: 40px;
                 max-height: 40px;
                 margin: 0;
-                font-weight: 500;
+                font-weight: 300;
                 max-width: 250px;
                 min-width: 250px;
             }    
-            *[cssClass="title"]:focus {
+            *[cssClass="txt"] {     
+                font-size: 25px;
+                min-height: 35px;
+                max-height: 35px;
+                margin: 0;
+                font-weight: 100;
+                max-width: 200px;
+                min-width: 200px;
+            } 
+            QLineEdit {
+                background-color: rgba(0,0,0,0);       
+                padding: 3px;
+                color: #382606;
+                border: none;
+            }
+            QLineEdit:focus {
                 background-color: rgba(0,0,0,0.1);    
             }
             
