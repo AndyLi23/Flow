@@ -15,8 +15,7 @@ class App(QMainWindow):
         self.items = []
 
 
-        self.mainLayout = QVBoxLayout()
-        
+        self.mainLayout = QVBoxLayout()        
         
         self.setGeometry(0, 0, 1080, 720)
         self.setStylesheet()
@@ -44,7 +43,7 @@ class App(QMainWindow):
     def setStylesheet(self):
         self.setStyleSheet("""
         QMainWindow {
-            background: url(../assets/a.jpg) no-repeat center center fixed;
+            border-image: url(../assets/a.jpg) 0 0 0 0 stretch stretch;
         }
         """)
 
@@ -67,7 +66,7 @@ class App(QMainWindow):
             }
             QPushButton {
                 font-size: 100px;
-                color: #382606;
+                color: #e0c575;
                 height: 100px;
                 width: 100px;
                 background: none;
@@ -75,7 +74,7 @@ class App(QMainWindow):
             }
             
             QPushButton:pressed {
-                color: #685636;
+                color: #a68b3d;
             }
         """)
         

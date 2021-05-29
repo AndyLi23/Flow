@@ -16,16 +16,20 @@ class Item(QWidget):
         self.layout = QHBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
                         
-        self.setGeometry(30, 30, 330, 110)
+        self.setGeometry(30, 30, 320, 80)
         
         self.p = QLabel("")
         
         self.title = QLineEdit(self.p)
-        self.title.move(22, 20)
+        self.title.move(32, 20)
         self.title.setFrame(False);
         
         self.title.setProperty("cssClass", "title")
         self.title.setAttribute(Qt.WA_MacShowFocusRect, 0)
+        
+        self.close = QPushButton("x")
+        self.close.move(280, 0)
+        self.close.pressed.connect(self.delete)
         
         self.title.setAlignment(Qt.AlignCenter)
         
@@ -45,21 +49,34 @@ class Item(QWidget):
                 padding: 3px;
                 color: #382606;
                 border: none;
-                font-size: 30px;
-                font-family: times;
+                font-size: 35px;
                 min-height: 40px;
                 max-height: 40px;
                 margin: 0;
+                font-weight: 500;
                 max-width: 250px;
                 min-width: 250px;
             }    
             *[cssClass="title"]:focus {
                 background-color: rgba(0,0,0,0.1);    
             }
+            
+            QPushButton {
+                background: none;
+                border: none;
+                min-height: 30px;
+                max-height: 30px;
+                min-width: 30px;
+                max-width: 30px;
+                font-size: 30px;
+                color: #8a680a;
+            }
 
         """)
         
         self.show()
+        self.close.setParent(self)
+        self.close.show()
 
         
     def mousePressEvent(self, event):
@@ -83,3 +100,7 @@ class Item(QWidget):
 
     def mouseReleaseEvent(self, QMouseEvent):
         self.pressing = False
+        
+    def delete(self):
+        self.close.deleteLater()
+        self.deleteLater()
