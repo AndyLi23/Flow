@@ -16,6 +16,7 @@ class App(QMainWindow):
 
 
         self.mainLayout = QVBoxLayout()      
+        self.setMaximumSize(2000, 1200)
         
         self.curPos = []
         
@@ -45,7 +46,8 @@ class App(QMainWindow):
     def setStylesheet(self):
         self.setStyleSheet("""
         QMainWindow {
-            border-image: url(../assets/a.jpg) 0 0 0 0 stretch stretch;
+            background: url(../assets/a.jpg) no-repeat center center fixed;
+            
         }
         """)
 

@@ -17,31 +17,40 @@ class Item(QWidget):
             
         self.order = window.curPos[-1]
         
-        self.setGeometry(30+20*self.order, 30+20*self.order, 320, 80)
+        self.children = []
+        
+        self.setGeometry(30+20*self.order, 30+20*self.order, 320, 120)
             
         self.window = window
         
         self.start = QPoint(50, 50)
         self.pressing = False
 
-        self.layout = QHBoxLayout()
+        self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
+        self.layout.setAlignment(Qt.AlignTop)
                                 
         self.p = QLabel("")
+        self.p.setProperty("cssClass", "main")
         
         self.title = QLineEdit(self.p)
-        self.title.move(32, 20)
+        self.title.move(32, 30)
         self.title.setFrame(False);
         
         self.title.setProperty("cssClass", "title")
         self.title.setAttribute(Qt.WA_MacShowFocusRect, 0)
         
         self.close = QPushButton("x")
-        self.close.move(280, 0)
+        self.close.move(270, 5)
         self.close.pressed.connect(self.delete)
         
         self.title.setAlignment(Qt.AlignCenter)
         
+        
+        self.s = QLabel("", self)
+        self.s.setProperty("cssClass", "stick")
+        self.s.move(50, 20)
+                
         self.layout.addWidget(self.p)
         
         self.setLayout(self.layout)
@@ -49,9 +58,22 @@ class Item(QWidget):
         self.setStyleSheet("""
             
             QLabel {
-                background: url(../assets/b.png) no-repeat center center fixed;
+                border-image: url(../assets/b.png) 0 0 0 0 stretch stretch;
                 border-radius: 20px;
-            }   
+                background-color: rgba(0,0,0,0);
+            }  
+            
+            *[cssClass="main"] {
+                max-height: 100px;
+                min-height: 100px;
+            }
+            
+            *[cssClass="stick"] {
+                border-image: url(../assets/c.png) 0 0 0 0 stretch stretch;
+                max-width: 20px;
+                min-width: 20px;
+                min-height: 100px;
+            }
 
             *[cssClass="title"] {     
                 background-color: rgba(0,0,0,0);       
@@ -78,7 +100,7 @@ class Item(QWidget):
                 min-width: 30px;
                 max-width: 30px;
                 font-size: 30px;
-                color: #8a680a;
+                color: #423400;
             }
 
         """)
@@ -98,16 +120,30 @@ class Item(QWidget):
         QMainWindow.mousePressEvent(self, event)
 
     def mouseMoveEvent(self, event):
+        self.end = self.mapToGlobal(event.pos()) - self.window.pos()
+        if self.end.x() < 0 or self.end.y() < 28 or self.end.x() > self.window.width() or self.end.y() > self.window.height() + 28:
+            self.pressing = False
+        
         if self.pressing:
             self.end = self.mapToGlobal(event.pos())
             self.movement = self.end-self.start
+            
+            if self.x() + self.movement.x() < 0:
+                self.movement.setX(0)
+            if self.y() + self.movement.y() < 0:
+                self.movement.setY(0)
+            if self.x() + self.movement.x() > self.window.width() - self.width():
+                self.movement.setX(0)
+            if self.y() + self.movement.y() > self.window.height() - self.height():
+                self.movement.setY(0)
+            
             self.setGeometry(self.x() + self.movement.x(),
                                 self.y() + self.movement.y(),
                                 self.width(),
                                 self.height())
             self.start = self.end
             
-            if(self.movement.x() > 0 and self.movement.y() > 0):
+            if(self.movement.x() > 0 or self.movement.y() > 0):
                 if self.order in self.window.curPos:
                     self.window.curPos.remove(self.order)
 
