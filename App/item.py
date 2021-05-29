@@ -18,7 +18,7 @@ class Item(QWidget):
         self.order = window.curPos[-1]
         
         self.children = []
-        
+                
         self.setGeometry(30+20*self.order, 30+20*self.order, 320, 120)
             
         self.window = window
@@ -41,22 +41,49 @@ class Item(QWidget):
         self.title.setAttribute(Qt.WA_MacShowFocusRect, 0)
         
         self.close = QPushButton("x")
-        self.close.move(270, 5)
+        self.close.move(10, 0)
         self.close.pressed.connect(self.delete)
+        
+        self.add = QPushButton("+")
+        self.add.move(25, 90)
+        self.add.pressed.connect(self.addChild)
         
         self.title.setAlignment(Qt.AlignCenter)
         
         
         self.s = QLabel("", self)
         self.s.setProperty("cssClass", "stick")
-        self.s.move(50, 20)
+        self.s.move(30, 20)
                 
         self.layout.addWidget(self.p)
         
         self.setLayout(self.layout)
                 
-        self.setStyleSheet("""
-            
+        self.set_Stylesheet(100)
+        
+        self.show()
+        self.close.setParent(self)
+        self.add.setParent(self)
+        
+        self.close.show()
+        self.add.show()
+
+        
+    
+    def addChild(self):
+        n = len(self.children) + 1
+        print(n)
+        self.setGeometry(self.x(), self.y(), 320, 130 + 80*n)
+        self.set_Stylesheet(110 + 80*n)
+        self.add.move(25, 95+80*n)
+        
+        new = QLabel("", self)
+        new.setGeometry(10, 30+80*n, 250, 70)
+        new.show()
+        self.children.append(new)
+
+    def set_Stylesheet(self, n):
+        s = """
             QLabel {
                 border-image: url(../assets/b.png) 0 0 0 0 stretch stretch;
                 border-radius: 20px;
@@ -72,7 +99,7 @@ class Item(QWidget):
                 border-image: url(../assets/c.png) 0 0 0 0 stretch stretch;
                 max-width: 20px;
                 min-width: 20px;
-                min-height: 100px;
+                min-height: %spx;
             }
 
             *[cssClass="title"] {     
@@ -100,15 +127,13 @@ class Item(QWidget):
                 min-width: 30px;
                 max-width: 30px;
                 font-size: 30px;
-                color: #423400;
+                color: #593a00;
             }
 
-        """)
+        """ % (str(n))
         
-        self.show()
-        self.close.setParent(self)
-        self.close.show()
-
+        self.setStyleSheet(s)
+            
         
     def mousePressEvent(self, event):
         self.start = self.mapToGlobal(event.pos())
@@ -122,7 +147,8 @@ class Item(QWidget):
     def mouseMoveEvent(self, event):
         self.end = self.mapToGlobal(event.pos()) - self.window.pos()
         if self.end.x() < 0 or self.end.y() < 28 or self.end.x() > self.window.width() or self.end.y() > self.window.height() + 28:
-            self.pressing = False
+            self.pressing = False            
+        
         
         if self.pressing:
             self.end = self.mapToGlobal(event.pos())
@@ -146,6 +172,7 @@ class Item(QWidget):
             if(self.movement.x() > 0 or self.movement.y() > 0):
                 if self.order in self.window.curPos:
                     self.window.curPos.remove(self.order)
+                    
 
     def mouseReleaseEvent(self, QMouseEvent):
         self.pressing = False
