@@ -15,7 +15,9 @@ class App(QMainWindow):
         self.items = []
 
 
-        self.mainLayout = QVBoxLayout()        
+        self.mainLayout = QVBoxLayout()      
+        
+        self.curPos = []
         
         self.setGeometry(0, 0, 1080, 720)
         self.setStylesheet()
@@ -79,7 +81,7 @@ class App(QMainWindow):
         """)
         
     def addItem(self):
-        w = Item(self.page)
+        w = Item(self.page, self)
         
     def mousePressEvent(self, event):
         focused_widget = QApplication.focusWidget()

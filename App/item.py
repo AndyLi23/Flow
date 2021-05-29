@@ -5,19 +5,28 @@ from PyQt5.QtCore import *
 import sys
 
 class Item(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, window):
         super(Item, self).__init__()
                 
-        self.setParent(parent)        
+        self.setParent(parent)     
+        
+        if(len(window.curPos) == 0):
+            window.curPos.append(0)
+        else:
+            window.curPos.append(window.curPos[-1]+1)
+            
+        self.order = window.curPos[-1]
+        
+        self.setGeometry(30+20*self.order, 30+20*self.order, 320, 80)
+            
+        self.window = window
         
         self.start = QPoint(50, 50)
         self.pressing = False
 
         self.layout = QHBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
-                        
-        self.setGeometry(30, 30, 320, 80)
-        
+                                
         self.p = QLabel("")
         
         self.title = QLineEdit(self.p)
@@ -97,10 +106,16 @@ class Item(QWidget):
                                 self.width(),
                                 self.height())
             self.start = self.end
+            
+            if(self.movement.x() > 0 and self.movement.y() > 0):
+                if self.order in self.window.curPos:
+                    self.window.curPos.remove(self.order)
 
     def mouseReleaseEvent(self, QMouseEvent):
         self.pressing = False
         
     def delete(self):
+        if self.order in self.window.curPos:
+            self.window.curPos.remove(self.order)
         self.close.deleteLater()
         self.deleteLater()
