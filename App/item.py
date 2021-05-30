@@ -19,7 +19,7 @@ class Item(QWidget):
         
         self.children = []
                 
-        self.setGeometry(30+20*self.order, 30+20*self.order, 320, 120)
+        self.setGeometry(30+20*self.order, 30+20*self.order, 320, 130)
             
         self.window = window
         
@@ -45,7 +45,7 @@ class Item(QWidget):
         self.close.pressed.connect(self.delete)
         
         self.add = QPushButton("+")
-        self.add.move(25, 90)
+        self.add.move(25, 95)
         self.add.pressed.connect(self.addChild)
         
         self.title.setAlignment(Qt.AlignCenter)
@@ -59,7 +59,7 @@ class Item(QWidget):
         
         self.setLayout(self.layout)
                 
-        self.set_Stylesheet(100)
+        self.set_Stylesheet(110)
         
         self.show()
         self.close.setParent(self)
@@ -72,7 +72,6 @@ class Item(QWidget):
     
     def addChild(self):
         n = len(self.children) + 1
-        print(n)
         self.setGeometry(self.x(), self.y(), 320, 130 + 80*n)
         self.set_Stylesheet(110 + 80*n)
         self.add.move(25, 95+80*n)
@@ -80,6 +79,9 @@ class Item(QWidget):
         new = QLabel("", self)
         new.setGeometry(10, 30+80*n, 250, 70)
         
+        close = QPushButton("x")
+        close.move(5, 0)
+        close.pressed.connect(lambda: self.deleteSub((new, close)))
         
         txt = QLineEdit(new)
         txt.move(22, 15)
@@ -90,8 +92,11 @@ class Item(QWidget):
         
         txt.setAlignment(Qt.AlignCenter)
         
+        close.setParent(new)
+        close.show()
+        
         new.show()
-        self.children.append(new)
+        self.children.append((new, close))
 
     def set_Stylesheet(self, n):
         s = """
@@ -111,6 +116,7 @@ class Item(QWidget):
                 max-width: 20px;
                 min-width: 20px;
                 min-height: %spx;
+                max-height: %spx;
             }
 
             *[cssClass="title"] {     
@@ -152,7 +158,7 @@ class Item(QWidget):
                 color: #593a00;
             }
 
-        """ % (str(n))
+        """ % (str(n), str(n))
         
         self.setStyleSheet(s)
             
@@ -176,13 +182,21 @@ class Item(QWidget):
             self.end = self.mapToGlobal(event.pos())
             self.movement = self.end-self.start
             
-            if self.x() + self.movement.x() < 0:
+            if self.x() + self.movement.x() < -30 and not self.x() < -30:
                 self.movement.setX(0)
-            if self.y() + self.movement.y() < 0:
+            elif self.x() < -30 and self.movement.x() < 0:
+                self.movement.setX(0)
+            if self.y() + self.movement.y() < -30  and not self.y() < -30:
                 self.movement.setY(0)
-            if self.x() + self.movement.x() > self.window.width() - self.width():
+            elif self.y() < -30 and self.movement.y() < 0:
+                self.movement.setY(0)
+            if self.x() + self.movement.x() > self.window.width() - self.width() + 30 and not self.x() > self.window.width() - self.width() + 30:
                 self.movement.setX(0)
-            if self.y() + self.movement.y() > self.window.height() - self.height():
+            elif self.x() > self.window.width() - self.width() + 30 and self.movement.x() > 0:
+                self.movement.setX(0)
+            if self.y() + self.movement.y() > self.window.height() - self.height() + 30 and not self.y() > self.window.height() - self.height() + 30:
+                self.movement.setY(0)
+            elif self.y() > self.window.height() - self.height() + 30 and self.movement.y() > 0:
                 self.movement.setY(0)
             
             self.setGeometry(self.x() + self.movement.x(),
@@ -204,3 +218,22 @@ class Item(QWidget):
             self.window.curPos.remove(self.order)
         self.close.deleteLater()
         self.deleteLater()
+        
+    def deleteSub(self, x):
+        n = self.children.index(x)
+        print(n)
+        cur = self.children[n]
+        cur[0].deleteLater()
+        cur[1].deleteLater()
+        
+        for item in self.children[n+1:]:
+            item[0].move(item[0].x(), item[0].y()-80)
+            
+        del self.children[n]
+        
+        self.set_Stylesheet(110 + 80*len(self.children))
+            
+        self.add.move(self.add.x(), self.add.y()-80)
+        
+        self.setGeometry(self.x(), self.y(), 320, 130 + 80*len(self.children))
+        
