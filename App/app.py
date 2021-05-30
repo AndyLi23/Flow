@@ -3,8 +3,8 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys
-import playsound
 from item import Item
+import json
 
 
 class App(QMainWindow):
@@ -19,7 +19,7 @@ class App(QMainWindow):
         self.setMaximumSize(2000, 1200)
         
         self.curPos = []
-        
+                
         self.setGeometry(0, 0, 1080, 720)
         self.setStylesheet()
         self.initUI()
@@ -38,8 +38,10 @@ class App(QMainWindow):
         
         self.setCentralWidget(self.page)
 
-        self.page.setStyleSheet("""
-        """)
+        with open("../assets/data/a.json", "r") as fin:
+            data = json.loads(fin.read())
+            for item in data:
+                self.addItem(item)
 
         self.show()
 
@@ -57,7 +59,7 @@ class App(QMainWindow):
         layout.setAlignment(Qt.AlignBottom)
         self.add = QPushButton("+")
         
-        self.add.clicked.connect(self.addItem)
+        self.add.clicked.connect(lambda: self.addItem(None))
 
         layout.addWidget(self.add)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -82,14 +84,21 @@ class App(QMainWindow):
             }
         """)
         
-    def addItem(self):
-        w = Item(self.page, self)
+    def addItem(self, data):
+        w = Item(self.page, self, data)
+        self.items.append(w)
+
         
     def mousePressEvent(self, event):
         focused_widget = QApplication.focusWidget()
         if isinstance(focused_widget, QLineEdit):
             focused_widget.clearFocus()
         QMainWindow.mousePressEvent(self, event)
+        
+    def closeEvent(self, event):
+        with open("../assets/data/a.json", "w+") as fout:
+            fout.write(json.dumps([i.getJsonData() for i in self.items]))        
+    
 
 
 

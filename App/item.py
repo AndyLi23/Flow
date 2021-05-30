@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 import sys
 
 class Item(QWidget):
-    def __init__(self, parent, window):
+    def __init__(self, parent, window, data):
         super(Item, self).__init__()
                 
         self.setParent(parent)     
@@ -18,8 +18,6 @@ class Item(QWidget):
         self.order = window.curPos[-1]
         
         self.children = []
-                
-        self.setGeometry(30+20*self.order, 30+20*self.order, 320, 130)
             
         self.window = window
         
@@ -46,7 +44,7 @@ class Item(QWidget):
         
         self.add = QPushButton("+")
         self.add.move(25, 95)
-        self.add.pressed.connect(self.addChild)
+        self.add.pressed.connect(lambda: self.addChild(""))
         
         self.title.setAlignment(Qt.AlignCenter)
         
@@ -61,6 +59,21 @@ class Item(QWidget):
                 
         self.set_Stylesheet(110)
         
+        
+        if data:
+            pos = data["pos"]
+            self.setGeometry(pos[0], pos[1], 320, 130)
+            
+            self.title.setText(data["txt"])
+            
+            for child in data["children"]:
+                self.addChild(child)
+            
+            
+        else:
+            self.setGeometry(30+20*self.order, 30+20*self.order, 320, 130)
+        
+        
         self.show()
         self.close.setParent(self)
         self.add.setParent(self)
@@ -70,7 +83,7 @@ class Item(QWidget):
 
         
     
-    def addChild(self):
+    def addChild(self, text):
         n = len(self.children) + 1
         self.setGeometry(self.x(), self.y(), 320, 130 + 80*n)
         self.set_Stylesheet(110 + 80*n)
@@ -87,6 +100,8 @@ class Item(QWidget):
         txt.move(22, 15)
         txt.setFrame(False);
         
+        txt.setText(text)
+        
         txt.setProperty("cssClass", "txt")
         txt.setAttribute(Qt.WA_MacShowFocusRect, 0)
         
@@ -96,7 +111,7 @@ class Item(QWidget):
         close.show()
         
         new.show()
-        self.children.append((new, close))
+        self.children.append((new, close, txt))
 
     def set_Stylesheet(self, n):
         s = """
@@ -236,4 +251,14 @@ class Item(QWidget):
         self.add.move(self.add.x(), self.add.y()-80)
         
         self.setGeometry(self.x(), self.y(), 320, 130 + 80*len(self.children))
+        
+    def getJsonData(self):
+        ans = {}
+        
+        ans["pos"] = (self.x(), self.y())
+        ans["txt"] = self.title.text()
+        
+        ans["children"] = [child[2].text() for child in self.children]
+        
+        return ans
         
