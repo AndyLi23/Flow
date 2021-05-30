@@ -40,8 +40,10 @@ class App(QMainWindow):
 
         with open("../assets/data/a.json", "r") as fin:
             data = json.loads(fin.read())
-            for item in data:
+            for item in data["items"]:
                 self.addItem(item)
+                
+            self.curPos = data["order"]
 
         self.show()
 
@@ -97,7 +99,7 @@ class App(QMainWindow):
         
     def closeEvent(self, event):
         with open("../assets/data/a.json", "w+") as fout:
-            fout.write(json.dumps([i.getJsonData() for i in self.items]))        
+            fout.write(json.dumps({"items": [i.getJsonData() for i in self.items], "order": self.curPos}))        
     
 
 

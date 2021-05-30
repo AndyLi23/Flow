@@ -69,6 +69,7 @@ class Item(QWidget):
             for child in data["children"]:
                 self.addChild(child)
             
+            self.order = data["order"]
             
         else:
             self.setGeometry(30+20*self.order, 30+20*self.order, 320, 130)
@@ -94,7 +95,7 @@ class Item(QWidget):
         
         close = QPushButton("x")
         close.move(5, 0)
-        close.pressed.connect(lambda: self.deleteSub((new, close)))
+        close.pressed.connect(lambda: self.deleteSub((new, close, txt)))
         
         txt = QLineEdit(new)
         txt.move(22, 15)
@@ -231,12 +232,13 @@ class Item(QWidget):
     def delete(self):
         if self.order in self.window.curPos:
             self.window.curPos.remove(self.order)
+            
+        self.window.items.remove(self)
         self.close.deleteLater()
         self.deleteLater()
         
     def deleteSub(self, x):
         n = self.children.index(x)
-        print(n)
         cur = self.children[n]
         cur[0].deleteLater()
         cur[1].deleteLater()
@@ -257,6 +259,7 @@ class Item(QWidget):
         
         ans["pos"] = (self.x(), self.y())
         ans["txt"] = self.title.text()
+        ans["order"] = self.order
         
         ans["children"] = [child[2].text() for child in self.children]
         
