@@ -39,7 +39,10 @@ class App(QMainWindow):
         self.setCentralWidget(self.page)
 
         with open("../assets/data/a.json", "r") as fin:
-            data = json.loads(fin.read())
+            if fin.read() == "":
+                data = json.loads("""{"items": [], "order": []}""")
+            else:
+                data = json.loads(fin.read())
             for item in data["items"]:
                 self.addItem(item)
                 
